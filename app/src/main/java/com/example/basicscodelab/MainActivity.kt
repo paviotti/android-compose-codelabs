@@ -1,17 +1,11 @@
 package com.example.basicscodelab
 
 import android.os.Bundle
-import android.support.v4.os.IResultReceiver
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,32 +24,59 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MyApp(names: List<String> = listOf("World", "Compose")) {
+private fun MyApp() {
+    var shouldShowOnboarding by remember { mutableStateOf(true) }
+    if (shouldShowOnboarding) {
+        OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
+    } else {
+        Greettings()
+    }
+}
+
+@Composable
+private fun Greettings(names: List<String> = listOf("World", "Compose")) {
     Column() {
         for (name in names) {
-            Greeting(name = name)
+            Greeting(name)
         }
     }
 }
 
 @Composable
 private fun Greeting(name: String) {
-    val expanded = remember {mutableStateOf(false)}
-    val extraPadding = if(expanded.value) 48.dp else 0.dp
+    val expanded = remember { mutableStateOf(false) }
+    val extraPadding = if (expanded.value) 48.dp else 0.dp
     Surface(
         color = MaterialTheme.colors.primary,
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
         Row(modifier = Modifier.padding(24.dp)) {
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
                     .padding(bottom = extraPadding)
             ) {
                 Text(text = "Hello, ")
                 Text(name)
             }
-            OutlinedButton(onClick = {expanded.value = !expanded.value}) {
-                Text(if(expanded.value) "Show Less" else "Show more")
+            OutlinedButton(onClick = { expanded.value = !expanded.value }) {
+                Text(if (expanded.value) "Show Less" else "Show more")
+            }
+        }
+    }
+}
+
+@Composable
+private fun OnboardingScreen(onContinueClicked: () -> Unit) {
+    Surface {
+        Column(
+            modifier = Modifier.fillMaxSize(), //preencher a tela
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Welcome to rhe Basics CodeLabs", modifier = Modifier.padding(24.dp))
+            Button(onClick = onContinueClicked) {
+                Text(text = "Continue")
             }
         }
     }
@@ -65,6 +86,7 @@ private fun Greeting(name: String) {
 @Composable
 private fun DefaultPreview() {
     BasicsCodelabTheme {
+        //  MyApp()
         MyApp()
     }
 }
